@@ -1,0 +1,37 @@
+import com.offbytwo.jenkins.JenkinsServer;
+import com.offbytwo.jenkins.model.BuildWithDetails;
+
+import java.net.URI;
+
+public class JenkinsClient {
+    private static final String JENKINS_URL = "http://localhost:8080";
+    private static final String JOB_NAME = "my-job";
+
+    private JenkinsServer jenkins;
+
+    public JenkinsClient() {
+        try {
+            jenkins = new JenkinsServer(new URI(JENKINS_URL));
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to connect to Jenkins", e);
+        }
+    }
+
+    public void triggerBuild() {
+        try {
+            jenkins.getJob(JOB_NAME).build();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to trigger build", e);
+        }
+    }
+
+    public BuildWithDetails getBuildDetails(int buildNumber) {
+        try {
+            return jenkins.getJob(JOB_NAME).getBuildByNumber(buildNumber).details();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to get build details", e);
+        }
+    }
+
+    // Other utility methods...
+}
