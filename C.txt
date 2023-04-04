@@ -1,0 +1,35 @@
+import com.github.dockerjava.api.DockerClient;
+import com.github.dockerjava.api.command.BuildImageResultCallback;
+import com.github.dockerjava.api.model.BuildResponseItem;
+
+public class DockerClient {
+    private static final String DOCKERFILE_PATH = "Dockerfile";
+    private static final String IMAGE_NAME = "my-app:latest";
+
+    private DockerClient docker;
+
+    public DockerClient() {
+        docker = DockerClientBuilder.getInstance().build();
+    }
+
+    public void buildImage() {
+        docker.buildImageCmd()
+                .withDockerfile(new File(DOCKERFILE_PATH))
+                .withTag(IMAGE_NAME)
+                .exec(new BuildImageResultCallback() {
+                    @Override
+                    public void onNext(BuildResponseItem item) {
+                        // Log build progress...
+                    }
+                })
+                .awaitImageId();
+    }
+
+    public void pushImage() {
+        docker.pushImageCmd(IMAGE_NAME)
+                .exec(new PushImageResultCallback())
+                .awaitSuccess();
+    }
+
+    // Other utility methods...
+}
